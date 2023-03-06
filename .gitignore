@@ -2,6 +2,10 @@
 .idea/
 .vscode/
 
+# Environment files
+.env
+.env.local
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
