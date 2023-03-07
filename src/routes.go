@@ -3,11 +3,25 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"github.com/jmoiron/sqlx"
 	"net/http"
 )
 
 var db *sql.DB
+
+func parseJSON[T any](res http.ResponseWriter, req *http.Request, val *T) {
+	// Check that the request body is JSON.
+	if req.Header.Get("Content-Type") != "application/json" {
+		res.WriteHeader(http.StatusUnsupportedMediaType)
+		return
+	}
+	// Parse the request body.
+	err := json.NewDecoder(req.Body).Decode(val)
+	if err != nil {
+		res.WriteHeader(http.StatusUnprocessableEntity)
+	}
+}
 
 type Registration struct {
 	Teacher  string   `json:"teacher"`
@@ -22,22 +36,12 @@ func register(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// Check that the request body is JSON.
-	if req.Header.Get("Content-Type") != "application/json" {
-		res.WriteHeader(http.StatusUnsupportedMediaType)
-		return
-	}
-
 	// Parse the request body.
 	var registration Registration
-	err := json.NewDecoder(req.Body).Decode(&registration)
-	if err != nil {
-		res.WriteHeader(http.StatusUnprocessableEntity)
-		return
-	}
+	parseJSON(res, req, &registration)
 
 	// Insert the teacher into the database if they don't already exist.
-	_, err = db.Exec("INSERT IGNORE INTO teachers (teacher_email) VALUES (?)", registration.Teacher)
+	_, err := db.Exec("INSERT IGNORE INTO teachers (teacher_email) VALUES (?)", registration.Teacher)
 	if err != nil {
 		res.WriteHeader(http.StatusInternalServerError)
 		return
@@ -118,10 +122,27 @@ func commonStudents(res http.ResponseWriter, req *http.Request) {
 	res.WriteHeader(http.StatusOK)
 }
 
+type Student struct {
+	Student string `json:"student"`
+}
+
 // POST /api/suspend
 func suspend(res http.ResponseWriter, req *http.Request) {
+	// Check that the request method is POST.
 	if req.Method != http.MethodPost {
 		res.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	// Suspend the student, inserting if they don't already exist.
+	var student Student
+	parseJSON(res, req, &student)
+	_, err := db.Exec(`
+			INSERT INTO students (student_email, is_suspended) VALUES (?, TRUE)
+			ON DUPLICATE KEY UPDATE is_suspended = TRUE;
+		`, student.Student)
+	if err != nil {
+		fmt.Println(err)
+		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	res.WriteHeader(http.StatusNoContent)
