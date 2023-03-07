@@ -1,0 +1,42 @@
+POST http://localhost:3000/api/register
+Content-Type: application/json
+
+{
+  "teacher": "teacherken@gmail.com",
+  "students": [
+    "studentbob@gmail.com"
+  ]
+}
+
+###
+
+POST http://localhost:3000/api/register
+Content-Type: application/json
+
+{
+  "teacher": "teacherjen@gmail.com",
+  "students": [
+    "studentagnes@gmail.com",
+    "studentmiche@gmail.com"
+  ]
+}
+
+###
+
+POST http://localhost:3000/api/retrievefornotifications
+Content-Type: application/json
+
+{
+  "teacher": "teacherken@gmail.com",
+  "notification": "Hey everybody"
+}
+
+###
+
+POST http://localhost:3000/api/retrievefornotifications
+Content-Type: application/json
+
+{
+  "teacher": "teacherken@gmail.com",
+  "notification": "Hello students! @studentagnes@gmail.com @studentmiche@gmail.com"
+}
