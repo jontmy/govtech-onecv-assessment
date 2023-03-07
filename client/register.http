@@ -1,0 +1,10 @@
+POST http://localhost:3000/api/register
+Content-Type: application/json
+
+{
+  "teacher": "teacherken@gmail.com",
+  "students": [
+    "studentjon@gmail.com",
+    "studenthon@gmail.com"
+  ]
+}
