@@ -1,0 +1,6 @@
+POST http://localhost:3000/api/suspend
+Content-Type: application/json
+
+{
+  "student": "studentmary@gmail.com"
+}
