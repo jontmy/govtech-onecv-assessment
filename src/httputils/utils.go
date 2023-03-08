@@ -1,4 +1,4 @@
-package main
+package httputils
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func parseJSON[T any](res http.ResponseWriter, req *http.Request, val *T) {
+func ParseJSON[T any](res http.ResponseWriter, req *http.Request, val *T) {
 	// Check that the request body is JSON.
 	if req.Header.Get("Content-Type") != "application/json" {
 		res.WriteHeader(http.StatusUnsupportedMediaType)
@@ -19,7 +19,7 @@ func parseJSON[T any](res http.ResponseWriter, req *http.Request, val *T) {
 	}
 }
 
-func handleServerError(res http.ResponseWriter, err error) {
+func HandleServerError(res http.ResponseWriter, err error) {
 	type ErrorMessage struct {
 		Message string `json:"message"`
 	}
