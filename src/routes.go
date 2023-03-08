@@ -31,7 +31,7 @@ func register(res http.ResponseWriter, req *http.Request) {
 	// Insert the teacher into the database if they don't already exist.
 	_, err := db.Exec("INSERT IGNORE INTO teachers (teacher_email) VALUES (?)", registration.Teacher)
 	if err != nil {
-		res.WriteHeader(http.StatusInternalServerError)
+		handleServerError(res, err)
 		return
 	}
 
@@ -41,14 +41,14 @@ func register(res http.ResponseWriter, req *http.Request) {
 			INSERT IGNORE INTO students (student_email) VALUES (?);
 		`, student)
 		if err != nil {
-			res.WriteHeader(http.StatusInternalServerError)
+			handleServerError(res, err)
 			return
 		}
 		_, err = db.Exec(`
 			INSERT IGNORE INTO class (teacher_email, student_email) VALUES (?, ?);
 		`, registration.Teacher, student)
 		if err != nil {
-			res.WriteHeader(http.StatusInternalServerError)
+			handleServerError(res, err)
 			return
 		}
 	}
@@ -78,12 +78,12 @@ func commonStudents(res http.ResponseWriter, req *http.Request) {
 		HAVING COUNT(*) = ?
 	`, teachers, len(teachers))
 	if err != nil {
-		res.WriteHeader(http.StatusInternalServerError)
+		handleServerError(res, err)
 		return
 	}
 	rows, err := db.Query(query, args...)
 	if err != nil {
-		res.WriteHeader(http.StatusInternalServerError)
+		handleServerError(res, err)
 		return
 	}
 	defer rows.Close()
@@ -94,7 +94,7 @@ func commonStudents(res http.ResponseWriter, req *http.Request) {
 		var student string
 		err = rows.Scan(&student)
 		if err != nil {
-			res.WriteHeader(http.StatusInternalServerError)
+			handleServerError(res, err)
 			return
 		}
 		students.Students = append(students.Students, student)
@@ -104,8 +104,7 @@ func commonStudents(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(res).Encode(students)
 	if err != nil {
-		res.Header().Del("Content-Type")
-		res.WriteHeader(http.StatusInternalServerError)
+		handleServerError(res, err)
 		return
 	}
 	res.WriteHeader(http.StatusOK)
@@ -130,8 +129,7 @@ func suspend(res http.ResponseWriter, req *http.Request) {
 			ON DUPLICATE KEY UPDATE is_suspended = TRUE;
 		`, student.Student)
 	if err != nil {
-		fmt.Println(err)
-		res.WriteHeader(http.StatusInternalServerError)
+		handleServerError(res, err)
 		return
 	}
 	res.WriteHeader(http.StatusNoContent)
