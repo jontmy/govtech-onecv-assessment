@@ -127,12 +127,25 @@ func suspend(res http.ResponseWriter, req *http.Request) {
 		http.Error(res, "Only POST is allowed.", http.StatusMethodNotAllowed)
 		return
 	}
-	// Suspend the student, inserting if they don't already exist.
+
+	// Check that the student exists, otherwise return a 404.
 	var student Student
+	var studentExists bool
 	parseJSON(res, req, &student)
-	_, err := db.Exec(`
-			INSERT INTO students (student_email, is_suspended) VALUES (?, TRUE)
-			ON DUPLICATE KEY UPDATE is_suspended = TRUE;
+	row := db.QueryRow("SELECT EXISTS (SELECT 1 FROM students WHERE student_email = ?)", student.Student)
+	err := row.Scan(&studentExists)
+	if err != nil {
+		handleServerError(res, err)
+		return
+	}
+	if !studentExists {
+		http.Error(res, "Student not found.", http.StatusNotFound)
+		return
+	}
+
+	// Suspend the student.
+	_, err = db.Exec(`
+			INSERT INTO students (student_email, is_suspended) VALUES (?, TRUE);
 		`, student.Student)
 	if err != nil {
 		handleServerError(res, err)
@@ -233,12 +246,15 @@ func reset(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	// Clear all values from the database.
-	_, err := db.Exec(`
-		TRUNCATE TABLE class;
-		TRUNCATE TABLE students;
-		TRUNCATE TABLE teachers;
-	`)
-	if err != nil {
+	if _, err := db.Exec(`TRUNCATE TABLE class;`); err != nil {
+		handleServerError(res, err)
+		return
+	}
+	if _, err := db.Exec(`TRUNCATE TABLE teachers;`); err != nil {
+		handleServerError(res, err)
+		return
+	}
+	if _, err := db.Exec(`TRUNCATE TABLE students;`); err != nil {
 		handleServerError(res, err)
 		return
 	}
