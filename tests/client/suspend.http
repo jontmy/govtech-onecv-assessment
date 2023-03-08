@@ -8,3 +8,24 @@ Content-Type: application/json
 {
   "student": "studentmary@gmail.com"
 }
+
+###
+
+POST http://localhost:3000/api/register
+Content-Type: application/json
+
+{
+  "teacher": "teacherken@gmail.com",
+  "students": [
+    "studentmary@gmail.com"
+  ]
+}
+
+###
+
+POST http://localhost:3000/api/suspend
+Content-Type: application/json
+
+{
+  "student": "studentmary@gmail.com"
+}
