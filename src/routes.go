@@ -145,8 +145,10 @@ func suspend(res http.ResponseWriter, req *http.Request) {
 
 	// Suspend the student.
 	_, err = db.Exec(`
-			INSERT INTO students (student_email, is_suspended) VALUES (?, TRUE);
-		`, student.Student)
+		UPDATE students
+		SET is_suspended = TRUE
+		WHERE student_email = ?
+	`, student.Student)
 	if err != nil {
 		handleServerError(res, err)
 		return
