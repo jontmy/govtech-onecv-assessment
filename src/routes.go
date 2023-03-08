@@ -220,3 +220,23 @@ func retrieveForNotifications(res http.ResponseWriter, req *http.Request) {
 	}
 	res.WriteHeader(http.StatusOK)
 }
+
+// DELETE /api/reset
+func reset(res http.ResponseWriter, req *http.Request) {
+	// Check that the request method is DELETE.
+	if req.Method != http.MethodDelete {
+		res.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	// Clear all values from the database.
+	_, err := db.Exec(`
+		TRUNCATE TABLE class;
+		TRUNCATE TABLE students;
+		TRUNCATE TABLE teachers;
+	`)
+	if err != nil {
+		handleServerError(res, err)
+		return
+	}
+	res.WriteHeader(http.StatusNoContent)
+}

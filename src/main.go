@@ -24,6 +24,7 @@ func registerAPIHandlers() {
 	http.HandleFunc("/api/commonstudents", commonStudents)
 	http.HandleFunc("/api/suspend", suspend)
 	http.HandleFunc("/api/retrievefornotifications", retrieveForNotifications)
+	http.HandleFunc("/api/reset", reset)
 }
 
 func connectDatabase() {
