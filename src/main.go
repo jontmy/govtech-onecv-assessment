@@ -14,7 +14,7 @@ import (
 
 func registerAPIHandlers() {
 	http.HandleFunc("/api/register", api.Register)
-	http.HandleFunc("/api/commonstudents.go", api.CommonStudents)
+	http.HandleFunc("/api/commonstudents", api.CommonStudents)
 	http.HandleFunc("/api/suspend", api.Suspend)
 	http.HandleFunc("/api/retrievefornotifications", api.RetrieveForNotifications)
 	http.HandleFunc("/api/reset", api.Reset)
