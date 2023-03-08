@@ -5,21 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
 	"govtech-onecv-assessment/src/api"
 	"govtech-onecv-assessment/src/database"
+	"govtech-onecv-assessment/src/utils"
 	"log"
 	"net/http"
-	"os"
 )
-
-func getEnvVariable(key string) string {
-	err := godotenv.Load(".env")
-	if err != nil {
-		fmt.Printf("error loading .env: %s\n", err)
-	}
-	return os.Getenv(key)
-}
 
 func registerAPIHandlers() {
 	http.HandleFunc("/api/register", api.Register)
@@ -31,11 +22,11 @@ func registerAPIHandlers() {
 
 func connectDatabase() {
 	cfg := mysql.Config{
-		User:   getEnvVariable("DATABASE_USER"),
-		Passwd: getEnvVariable("DATABASE_PASSWORD"),
+		User:   utils.GetEnvVariable("DATABASE_USER"),
+		Passwd: utils.GetEnvVariable("DATABASE_PASSWORD"),
 		Net:    "tcp",
-		Addr:   getEnvVariable("DATABASE_URL"),
-		DBName: getEnvVariable("DATABASE_NAME"),
+		Addr:   utils.GetEnvVariable("DATABASE_URL"),
+		DBName: utils.GetEnvVariable("DATABASE_NAME"),
 	}
 	// Get the database handle.
 	var err error
@@ -53,7 +44,7 @@ func connectDatabase() {
 
 func startServer() {
 	// Start the server at the port specified in .env.
-	port := getEnvVariable("PORT")
+	port := utils.GetEnvVariable("PORT")
 	var addr string
 	if port == "" {
 		addr = ":3000"

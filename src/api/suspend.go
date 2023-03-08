@@ -2,7 +2,7 @@ package api
 
 import (
 	"govtech-onecv-assessment/src/database"
-	"govtech-onecv-assessment/src/httputils"
+	"govtech-onecv-assessment/src/utils"
 	"net/http"
 )
 
@@ -23,11 +23,11 @@ func Suspend(res http.ResponseWriter, req *http.Request) {
 	// Check that the student exists, otherwise return a 404.
 	var student Student
 	var studentExists bool
-	httputils.ParseJSON(res, req, &student)
+	utils.ParseJSON(res, req, &student)
 	row := db.QueryRow("SELECT EXISTS (SELECT 1 FROM students WHERE student_email = ?)", student.Student)
 	err := row.Scan(&studentExists)
 	if err != nil {
-		httputils.HandleServerError(res, err)
+		utils.HandleServerError(res, err)
 		return
 	}
 	if !studentExists {
@@ -42,7 +42,7 @@ func Suspend(res http.ResponseWriter, req *http.Request) {
 		WHERE student_email = ?
 	`, student.Student)
 	if err != nil {
-		httputils.HandleServerError(res, err)
+		utils.HandleServerError(res, err)
 		return
 	}
 	res.WriteHeader(http.StatusNoContent)

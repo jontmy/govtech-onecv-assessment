@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"govtech-onecv-assessment/src/database"
-	"govtech-onecv-assessment/src/httputils"
+	"govtech-onecv-assessment/src/utils"
 	"net/http"
 	"strings"
 )
@@ -30,7 +30,7 @@ func RetrieveForNotifications(res http.ResponseWriter, req *http.Request) {
 	}
 	// Deserialize the request JSON.
 	var notification Notification
-	httputils.ParseJSON(res, req, &notification)
+	utils.ParseJSON(res, req, &notification)
 	// Get the message and the list of all @-mentioned students.
 	fmt.Println(notification.Notification)
 	splits := strings.Split(notification.Notification, " @")
@@ -60,18 +60,18 @@ func RetrieveForNotifications(res http.ResponseWriter, req *http.Request) {
 			AND (c.teacher_email = ? OR c.student_email IN (?));
 		`, notification.Teacher, students)
 		if err != nil {
-			httputils.HandleServerError(res, err)
+			utils.HandleServerError(res, err)
 			return
 		}
 		rows, err = db.Query(query, args...)
 	}
 	if err != nil {
-		httputils.HandleServerError(res, err)
+		utils.HandleServerError(res, err)
 	}
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {
-			httputils.HandleServerError(res, err)
+			utils.HandleServerError(res, err)
 			return
 		}
 	}(rows)
@@ -82,7 +82,7 @@ func RetrieveForNotifications(res http.ResponseWriter, req *http.Request) {
 		var student string
 		err = rows.Scan(&student)
 		if err != nil {
-			httputils.HandleServerError(res, err)
+			utils.HandleServerError(res, err)
 			return
 		}
 		recipients.Recipients = append(recipients.Recipients, student)
@@ -92,7 +92,7 @@ func RetrieveForNotifications(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(res).Encode(recipients)
 	if err != nil {
-		httputils.HandleServerError(res, err)
+		utils.HandleServerError(res, err)
 	}
 	res.WriteHeader(http.StatusOK)
 }

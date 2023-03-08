@@ -2,7 +2,7 @@ package api
 
 import (
 	"govtech-onecv-assessment/src/database"
-	"govtech-onecv-assessment/src/httputils"
+	"govtech-onecv-assessment/src/utils"
 	"net/http"
 )
 
@@ -23,12 +23,12 @@ func Register(res http.ResponseWriter, req *http.Request) {
 
 	// Parse the request body.
 	var registration Registration
-	httputils.ParseJSON(res, req, &registration)
+	utils.ParseJSON(res, req, &registration)
 
 	// Insert the teacher into the database if they don't already exist.
 	_, err := db.Exec("INSERT IGNORE INTO teachers (teacher_email) VALUES (?)", registration.Teacher)
 	if err != nil {
-		httputils.HandleServerError(res, err)
+		utils.HandleServerError(res, err)
 		return
 	}
 
@@ -38,14 +38,14 @@ func Register(res http.ResponseWriter, req *http.Request) {
 			INSERT IGNORE INTO students (student_email) VALUES (?);
 		`, student)
 		if err != nil {
-			httputils.HandleServerError(res, err)
+			utils.HandleServerError(res, err)
 			return
 		}
 		_, err = db.Exec(`
 			INSERT IGNORE INTO class (teacher_email, student_email) VALUES (?, ?);
 		`, registration.Teacher, student)
 		if err != nil {
-			httputils.HandleServerError(res, err)
+			utils.HandleServerError(res, err)
 			return
 		}
 	}

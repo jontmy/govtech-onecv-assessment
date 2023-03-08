@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"github.com/jmoiron/sqlx"
 	"govtech-onecv-assessment/src/database"
-	"govtech-onecv-assessment/src/httputils"
+	"govtech-onecv-assessment/src/utils"
 	"net/http"
 )
 
@@ -33,18 +33,18 @@ func CommonStudents(res http.ResponseWriter, req *http.Request) {
 		HAVING COUNT(*) = ?
 	`, teachers, len(teachers))
 	if err != nil {
-		httputils.HandleServerError(res, err)
+		utils.HandleServerError(res, err)
 		return
 	}
 	rows, err := db.Query(query, args...)
 	if err != nil {
-		httputils.HandleServerError(res, err)
+		utils.HandleServerError(res, err)
 		return
 	}
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {
-			httputils.HandleServerError(res, err)
+			utils.HandleServerError(res, err)
 			return
 		}
 	}(rows)
@@ -55,7 +55,7 @@ func CommonStudents(res http.ResponseWriter, req *http.Request) {
 		var student string
 		err = rows.Scan(&student)
 		if err != nil {
-			httputils.HandleServerError(res, err)
+			utils.HandleServerError(res, err)
 			return
 		}
 		students.Students = append(students.Students, student)
@@ -65,7 +65,7 @@ func CommonStudents(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(res).Encode(students)
 	if err != nil {
-		httputils.HandleServerError(res, err)
+		utils.HandleServerError(res, err)
 		return
 	}
 	res.WriteHeader(http.StatusOK)

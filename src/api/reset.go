@@ -2,7 +2,7 @@ package api
 
 import (
 	"govtech-onecv-assessment/src/database"
-	"govtech-onecv-assessment/src/httputils"
+	"govtech-onecv-assessment/src/utils"
 	"net/http"
 )
 
@@ -17,15 +17,15 @@ func Reset(res http.ResponseWriter, req *http.Request) {
 	}
 	// Clear all values from the database.
 	if _, err := db.Exec(`TRUNCATE TABLE class;`); err != nil {
-		httputils.HandleServerError(res, err)
+		utils.HandleServerError(res, err)
 		return
 	}
 	if _, err := db.Exec(`TRUNCATE TABLE teachers;`); err != nil {
-		httputils.HandleServerError(res, err)
+		utils.HandleServerError(res, err)
 		return
 	}
 	if _, err := db.Exec(`TRUNCATE TABLE students;`); err != nil {
-		httputils.HandleServerError(res, err)
+		utils.HandleServerError(res, err)
 		return
 	}
 	res.WriteHeader(http.StatusNoContent)

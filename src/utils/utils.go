@@ -1,10 +1,20 @@
-package httputils
+package utils
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/joho/godotenv"
 	"net/http"
+	"os"
 )
+
+func GetEnvVariable(key string) string {
+	err := godotenv.Load(".env")
+	if err != nil {
+		fmt.Printf("error loading .env: %s\n", err)
+	}
+	return os.Getenv(key)
+}
 
 func ParseJSON[T any](res http.ResponseWriter, req *http.Request, val *T) {
 	// Check that the request body is JSON.
