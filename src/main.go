@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
+	"govtech-onecv-assessment/src/api"
+	"govtech-onecv-assessment/src/database"
 	"log"
 	"net/http"
 	"os"
@@ -20,11 +22,11 @@ func getEnvVariable(key string) string {
 }
 
 func registerAPIHandlers() {
-	http.HandleFunc("/api/register", register)
-	http.HandleFunc("/api/commonstudents", commonStudents)
-	http.HandleFunc("/api/suspend", suspend)
-	http.HandleFunc("/api/retrievefornotifications", retrieveForNotifications)
-	http.HandleFunc("/api/reset", reset)
+	http.HandleFunc("/api/register", api.Register)
+	http.HandleFunc("/api/commonstudents.go", api.CommonStudents)
+	http.HandleFunc("/api/suspend", api.Suspend)
+	http.HandleFunc("/api/retrievefornotifications", api.RetrieveForNotifications)
+	http.HandleFunc("/api/reset", api.Reset)
 }
 
 func connectDatabase() {
@@ -35,8 +37,9 @@ func connectDatabase() {
 		Addr:   getEnvVariable("DATABASE_URL"),
 		DBName: getEnvVariable("DATABASE_NAME"),
 	}
-	// Get a database handle.
+	// Get the database handle.
 	var err error
+	db := database.GetDB()
 	db, err = sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
 		log.Fatal(err)
