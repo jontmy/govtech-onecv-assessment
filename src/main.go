@@ -39,11 +39,11 @@ func connectDatabase() {
 	}
 	// Get the database handle.
 	var err error
-	db := database.GetDB()
-	db, err = sql.Open("mysql", cfg.FormatDSN())
+	db, err := sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
 		log.Fatal(err)
 	}
+	database.SetDB(db)
 	pingErr := db.Ping()
 	if pingErr != nil {
 		log.Fatal(pingErr)
