@@ -20,7 +20,7 @@ func register(res http.ResponseWriter, req *http.Request) {
 
 	// Check that the request method is POST.
 	if req.Method != http.MethodPost {
-		res.WriteHeader(http.StatusMethodNotAllowed)
+		http.Error(res, "Only POST is allowed.", http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -64,7 +64,7 @@ func commonStudents(res http.ResponseWriter, req *http.Request) {
 
 	// Check that the request method is GET.
 	if req.Method != http.MethodGet {
-		res.WriteHeader(http.StatusMethodNotAllowed)
+		http.Error(res, "Only GET is allowed.", http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -118,7 +118,7 @@ func suspend(res http.ResponseWriter, req *http.Request) {
 
 	// Check that the request method is POST.
 	if req.Method != http.MethodPost {
-		res.WriteHeader(http.StatusMethodNotAllowed)
+		http.Error(res, "Only POST is allowed.", http.StatusMethodNotAllowed)
 		return
 	}
 	// Suspend the student, inserting if they don't already exist.
@@ -147,7 +147,7 @@ func retrieveForNotifications(res http.ResponseWriter, req *http.Request) {
 
 	// Check that the request method is POST.
 	if req.Method != http.MethodPost {
-		res.WriteHeader(http.StatusMethodNotAllowed)
+		http.Error(res, "Only POST is allowed.", http.StatusMethodNotAllowed)
 		return
 	}
 	// Deserialize the request JSON.
@@ -223,7 +223,7 @@ func retrieveForNotifications(res http.ResponseWriter, req *http.Request) {
 func reset(res http.ResponseWriter, req *http.Request) {
 	// Check that the request method is DELETE.
 	if req.Method != http.MethodDelete {
-		res.WriteHeader(http.StatusMethodNotAllowed)
+		http.Error(res, "Only DELETE is allowed.", http.StatusMethodNotAllowed)
 		return
 	}
 	// Clear all values from the database.
