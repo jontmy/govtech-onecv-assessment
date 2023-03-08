@@ -86,7 +86,13 @@ func commonStudents(res http.ResponseWriter, req *http.Request) {
 		handleServerError(res, err)
 		return
 	}
-	defer rows.Close()
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			handleServerError(res, err)
+			return
+		}
+	}(rows)
 
 	// Convert the rows into a list of students.
 	var students Students
