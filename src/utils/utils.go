@@ -29,10 +29,12 @@ func ParseJSON[T any](res http.ResponseWriter, req *http.Request, val *T) {
 	}
 }
 
+type ErrorMessage struct {
+	Message string `json:"message"`
+}
+
+// HandleServerError handles an error by logging it and sending a 500 response.
 func HandleServerError(res http.ResponseWriter, err error) {
-	type ErrorMessage struct {
-		Message string `json:"message"`
-	}
 	if err == nil {
 		return
 	}
@@ -42,6 +44,19 @@ func HandleServerError(res http.ResponseWriter, err error) {
 	res.WriteHeader(http.StatusInternalServerError)
 	msg := ErrorMessage{Message: err.Error()}
 	err = json.NewEncoder(res).Encode(msg)
+	if err != nil {
+		// Not much else we can do here that won't also need error handling.
+		return
+	}
+}
+
+// HandleCustomError handles an error by sending a custom error message in the JSON body with a specified HTTP status code.
+func HandleCustomError(res http.ResponseWriter, msg string, code int) {
+	// Error message should be encoded in JSON.
+	res.Header().Set("Content-Type", "application/json")
+	res.WriteHeader(code)
+	errMsg := ErrorMessage{Message: msg}
+	err := json.NewEncoder(res).Encode(errMsg)
 	if err != nil {
 		// Not much else we can do here that won't also need error handling.
 		return
