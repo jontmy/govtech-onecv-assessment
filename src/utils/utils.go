@@ -16,17 +16,26 @@ func GetEnvVariable(key string) string {
 	return os.Getenv(key)
 }
 
-func ParseJSON[T any](res http.ResponseWriter, req *http.Request, val *T) {
+// ParseJSON ensures that the request body and header specifies JSON, and parses it into the given value.
+// Returns true if the request body is parsed successfully, false otherwise.
+func ParseJSON[T any](res http.ResponseWriter, req *http.Request, val *T) bool {
 	// Check that the request body is JSON.
 	if req.Header.Get("Content-Type") != "application/json" {
-		res.WriteHeader(http.StatusUnsupportedMediaType)
-		return
+		HandleCustomError(res, "Content-Type must be application/json.", http.StatusUnsupportedMediaType)
+		return false
+	}
+	// Check JSON body is not empty.
+	if req.ContentLength == 0 {
+		HandleCustomError(res, "Empty request body.", http.StatusBadRequest)
+		return false
 	}
 	// Parse the request body.
 	err := json.NewDecoder(req.Body).Decode(val)
 	if err != nil {
-		res.WriteHeader(http.StatusUnprocessableEntity)
+		HandleCustomError(res, "Invalid JSON body.\n"+err.Error(), http.StatusBadRequest)
+		return false
 	}
+	return true
 }
 
 type ErrorMessage struct {
