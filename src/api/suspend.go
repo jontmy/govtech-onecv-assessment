@@ -10,28 +10,34 @@ type Student struct {
 	Student string `json:"student"`
 }
 
-// Suspend POST /api/suspend
+// Suspend implements POST /api/suspend
 func Suspend(res http.ResponseWriter, req *http.Request) {
 	db := database.GetDB()
 
 	// Check that the request method is POST.
 	if req.Method != http.MethodPost {
-		http.Error(res, "Only POST is allowed.", http.StatusMethodNotAllowed)
+		utils.HandleCustomError(res, "Only POST is allowed.", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Check that the student exists, otherwise return a 404.
+	// Check that the student exists, otherwise return a 422 if unspecified, or 404 otherwise.
 	var student Student
 	var studentExists bool
-	utils.ParseJSON(res, req, &student)
+	if !utils.ParseJSON(res, req, &student) {
+		return
+	}
 	row := db.QueryRow("SELECT EXISTS (SELECT 1 FROM students WHERE student_email = ?)", student.Student)
 	err := row.Scan(&studentExists)
 	if err != nil {
 		utils.HandleServerError(res, err)
 		return
 	}
+	if student.Student == "" {
+		utils.HandleCustomError(res, "Student email must be specified.", http.StatusUnprocessableEntity)
+		return
+	}
 	if !studentExists {
-		http.Error(res, "Student not found.", http.StatusNotFound)
+		utils.HandleCustomError(res, "Student does not exist.", http.StatusNotFound)
 		return
 	}
 

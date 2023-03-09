@@ -13,25 +13,37 @@ type Students struct {
 	Students []string `json:"students"`
 }
 
-// CommonStudents Implements GET /api/commonstudents.
+// CommonStudents implements GET /api/commonstudents.
 func CommonStudents(res http.ResponseWriter, req *http.Request) {
 	db := database.GetDB()
 
 	// Check that the request method is GET.
 	if req.Method != http.MethodGet {
-		http.Error(res, "Only GET is allowed.", http.StatusMethodNotAllowed)
+		utils.HandleCustomError(res, "Only GET is allowed.", http.StatusMethodNotAllowed)
 		return
 	}
 
 	// Get the list of teachers from the query string.
 	teachers := req.URL.Query()["teacher"]
-	query, args, err := sqlx.In(`
+	var query string
+	var args []interface{}
+	var err error
+	if len(teachers) == 0 {
+		// If there are no teachers specified, return all students.
+		query = `
+			SELECT student_email
+			FROM students
+		`
+	} else {
+		query, args, err = sqlx.In(`
 		SELECT DISTINCT student_email
 		FROM class NATURAL JOIN teachers NATURAL JOIN students
 		WHERE teacher_email IN (?)
 		GROUP BY student_email
 		HAVING COUNT(*) = ?
 	`, teachers, len(teachers))
+	}
+
 	if err != nil {
 		utils.HandleServerError(res, err)
 		return
@@ -50,7 +62,8 @@ func CommonStudents(res http.ResponseWriter, req *http.Request) {
 	}(rows)
 
 	// Convert the rows into a list of students.
-	var students Students
+	// If there are no students, return an empty list.
+	students := Students{Students: []string{}}
 	for rows.Next() {
 		var student string
 		err = rows.Scan(&student)

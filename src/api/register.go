@@ -11,19 +11,27 @@ type Registration struct {
 	Students []string `json:"students"`
 }
 
-// Register Implements POST /api/register.
+// Register implements POST /api/register.
 func Register(res http.ResponseWriter, req *http.Request) {
 	db := database.GetDB()
 
 	// Check that the request method is POST.
 	if req.Method != http.MethodPost {
-		http.Error(res, "Only POST is allowed.", http.StatusMethodNotAllowed)
+		utils.HandleCustomError(res, "Only POST is allowed.", http.StatusMethodNotAllowed)
 		return
 	}
 
 	// Parse the request body.
 	var registration Registration
-	utils.ParseJSON(res, req, &registration)
+	if !utils.ParseJSON(res, req, &registration) {
+		return
+	}
+
+	// Check that the request fields are valid.
+	if len(registration.Students) == 0 && len(registration.Teacher) == 0 {
+		utils.HandleCustomError(res, "No students or teacher provided.", http.StatusUnprocessableEntity)
+		return
+	}
 
 	// Insert the teacher into the database if they don't already exist.
 	_, err := db.Exec("INSERT IGNORE INTO teachers (teacher_email) VALUES (?)", registration.Teacher)

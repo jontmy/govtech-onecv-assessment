@@ -6,13 +6,13 @@ import (
 	"net/http"
 )
 
-// Reset Implements DELETE /api/reset.
+// Reset implements DELETE /api/reset.
 func Reset(res http.ResponseWriter, req *http.Request) {
 	db := database.GetDB()
 
 	// Check that the request method is DELETE.
 	if req.Method != http.MethodDelete {
-		http.Error(res, "Only DELETE is allowed.", http.StatusMethodNotAllowed)
+		utils.HandleCustomError(res, "Only DELETE is allowed.", http.StatusMethodNotAllowed)
 		return
 	}
 	// Clear all values from the database.
