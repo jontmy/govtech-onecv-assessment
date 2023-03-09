@@ -12,3 +12,33 @@ Content-Type: application/json
     "studenthon@gmail.com"
   ]
 }
+
+###
+
+POST http://localhost:3000/api/register
+Content-Type: application/json
+
+{
+  "teacher": "teacherken@gmail.com"
+}
+
+###
+
+POST http://localhost:3000/api/register
+Content-Type: application/json
+
+{
+  "students": [
+    "studentjon@gmail.com",
+    "studenthon@gmail.com"
+  ]
+}
+
+
+###
+
+POST http://localhost:3000/api/register
+Content-Type: application/json
+
+{
+}

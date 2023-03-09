@@ -34,3 +34,7 @@ GET http://localhost:3000/api/commonstudents?teacher=teacherken%40gmail.com
 ###
 
 GET http://localhost:3000/api/commonstudents?teacher=teacherken%40gmail.com&teacher=teacherjoe%40gmail.com
+
+###
+
+GET http://localhost:3000/api/commonstudents

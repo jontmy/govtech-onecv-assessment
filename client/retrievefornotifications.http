@@ -44,3 +44,35 @@ Content-Type: application/json
   "teacher": "teacherken@gmail.com",
   "notification": "Hello students! @studentagnes@gmail.com @studentmiche@gmail.com"
 }
+
+
+###
+
+POST http://localhost:3000/api/retrievefornotifications
+Content-Type: application/json
+
+{
+  "teacher": "teacherken@gmail.com",
+  "notification": ""
+}
+
+###
+
+POST http://localhost:3000/api/retrievefornotifications
+Content-Type: application/json
+
+{
+  "teacher": "",
+  "notification": "Hello students! @studentagnes@gmail.com @studentmiche@gmail.com"
+}
+
+
+###
+
+POST http://localhost:3000/api/retrievefornotifications
+Content-Type: application/json
+
+{
+  "teacher": "teacherdoesnotexist@gmail.com",
+  "notification": "Hello students! @studentagnes@gmail.com @studentmiche@gmail.com"
+}
