@@ -1,7 +1,7 @@
 # govtech-onecv-assessment
 Technical assessment for GovTech GDS OneCV internship program.
 
-### User Guide
+## User Guide
 
 If you do not wish to host the server locally, you may send the requests to my API server hosted on [http://146.190.193.16:3333](http://146.190.193.16:3333) instead.
 
