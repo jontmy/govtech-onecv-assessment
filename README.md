@@ -19,7 +19,7 @@ git clone https://github.com/jontmy/govtech-onecv-assessment.git
 ```
 cd govtech-onecv-assessment
 ```
-3. If you do not already have a MySQL database, create one.
+3. If you do not already have a MySQL database, create one for the purpose of this application.
 ```
 mysql -u <username> -p
 ```
@@ -30,11 +30,12 @@ mysql> CREATE DATABASE <database_name>;
 mysql> USE <database_name>;
 mysql> SOURCE src/database/db_ddl.sql>; -- if this doesn't work, try the absolute path
 ```
-Once that's done, exit the `mysql` command prompt.
+Once that's done, find the database hostname and port needed for later before exiting the `mysql` command prompt.
 ```
+mysql> SELECT @@hostname, @@port; -- this will be needed for the .env DATABASE_URL
 mysql> exit
 ```
-4. Create a `.env` file in the root directory of the project from the example file, and populate it. You will need to know the location and port on which the database will run. This can be done with the command `SELECT @@hostname, @@port;` in the `mysql` command prompt.
+4. Create a `.env` file in the root directory of the project from the example file, and populate it. You will need to know the name, hostname and port for the database.
 ```
 cp .env.example .env
 vim .env  # or any other text editor of your choice
